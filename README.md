@@ -74,6 +74,11 @@ uv run python leisaac/scripts/environments/teleoperation/teleop_se3_agent.py \
   --teleop_device so101leader
 ```
 
+
+A quick look at the SO-101 robot being controlled via a teleoperation device to pick up an orange.
+
+[![Weaver Teleop Demo](https://img.youtube.com/vi/1oPJk7aoVN0/hqdefault.jpg)](https://www.youtube.com/watch?v=1oPJk7aoVN0)
+
 **Arguments explained:**
 
 * `--task`: Specifies the task to execute

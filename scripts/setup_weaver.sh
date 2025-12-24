@@ -92,5 +92,5 @@ echo -e "${BLUE}================================================================
 echo -e "Para empezar a trabajar:"
 echo -e "1. Ya estás en la carpeta del proyecto."
 echo -e "2. Activa el entorno virtual: ${GREEN}source .venv/bin/activate${NC}"
-echo -e "3. Prueba un ejemplo de LeIsaac: ${GREEN}uv run python leisaac/examples/teleop.py${NC}"
+echo -e "3. Prueba un ejemplo de LeIsaac: ${GREEN}uv run python leisaac/scripts/environments/teleoperation/teleop_se3_agent.py --task LeIsaac-SO101-PickOrange-v0 --enable_cameras --teleop_device so101leader${NC}"
 echo -e "${BLUE}=====================================================================${NC}"
