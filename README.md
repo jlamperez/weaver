@@ -165,3 +165,30 @@ You can activate the LeRobot environment and manually run the upload command:
 source .venv-lerobot/bin/activate
 huggingface-cli upload your-hf-username/your-dataset-name ~/.cache/huggingface/lerobot/your-hf-username/your-dataset-name --repo-type dataset
 ```
+
+### 6. Training a Policy with LeRobot
+
+After uploading your dataset, you can train a policy.
+
+This project includes a train_ACT.ipynb notebook designed to be run on Google Colab
+for training an Action-Chunking Transformer (ACT) policy.
+
+#### 1. Open the Training Notebook in VSCode
+
+Open the train_ACT.ipynb notebook located in the root of the project.
+
+#### 2. Connect to a Google Colab Runtime
+
+1. Ensure you have the official Jupyter and Google Colab extensions for VSCode.
+2. In the top-right corner of the notebook, click on "Select Kernel".
+3. Choose "Connect to a Google Colab kernel..." and follow the prompts to sign in to your Google account.
+4. Select a runtime with GPU acceleration to speed up the training process.
+
+#### 3. Run the Notebook Cells
+
+Execute the cells in the notebook in order. The notebook is set up to:
+
+* Install lerobot and its dependencies in the Colab environment.
+* Load the dataset you previously uploaded to the Hugging Face Hub.
+* Configure the training parameters and start the training job.
+* Save the trained policy, which you can then download for evaluation.
