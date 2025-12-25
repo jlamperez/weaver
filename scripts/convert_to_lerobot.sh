@@ -55,7 +55,7 @@ if [ ! -f "$LEROBOT_VENV_DIR/bin/python" ]; then
     echo -e "${GREEN}Instalando LeRobot y h5py en el entorno '${LEROBOT_VENV_DIR}'...${NC}"
     # Para crear un entorno aislado en versiones de 'uv' que no soportan '--no-project',
     # ejecutamos la instalación desde un subshell en un directorio neutro (/).
-    (cd / && uv pip install --python "$CURRENT_DIR/$LEROBOT_VENV_DIR/bin/python" lerobot h5py)
+    (cd / && uv pip install --python "$CURRENT_DIR/$LEROBOT_VENV_DIR/bin/python" "lerobot[async]" h5py)
     # uv pip install git+https://github.com/huggingface/lerobot.git
 
     echo -e "${GREEN}✅ Entorno de LeRobot creado con éxito.${NC}"

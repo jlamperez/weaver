@@ -33,6 +33,7 @@ IsaacLab/
 leisaac/
 assets
 datasets/
+logs/
 
 # IDE / Editor specific files
 .vscode/
