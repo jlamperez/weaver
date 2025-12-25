@@ -56,6 +56,7 @@ if [ ! -f "$LEROBOT_VENV_DIR/bin/python" ]; then
     # Para crear un entorno aislado en versiones de 'uv' que no soportan '--no-project',
     # ejecutamos la instalación desde un subshell en un directorio neutro (/).
     (cd / && uv pip install --python "$CURRENT_DIR/$LEROBOT_VENV_DIR/bin/python" lerobot h5py)
+    # uv pip install git+https://github.com/huggingface/lerobot.git
 
     echo -e "${GREEN}✅ Entorno de LeRobot creado con éxito.${NC}"
 else
@@ -89,5 +90,5 @@ OUTPUT_DIR="$HOME/.cache/huggingface/lerobot/$REPO_ID"
 
 echo -e "${GREEN}✅ Conversión finalizada.${NC}"
 echo -e "El dataset en formato LeRobot se ha guardado en: ${GREEN}$OUTPUT_DIR${NC}"
-echo -e "Ahora puedes subirlo a Hugging Face Hub con: ${YELLOW}lerobot upload-dataset $OUTPUT_DIR --repo-id $REPO_ID${NC}"
+echo -e "Ahora puedes subirlo a Hugging Face Hub con: ${YELLOW}huggingface-cli upload $REPO_ID $OUTPUT_DIR --repo-type dataset${NC}"
 echo -e "(Recuerda ejecutar este último comando desde el entorno de LeRobot: ${BLUE}source $LEROBOT_VENV_DIR/bin/activate${NC})"

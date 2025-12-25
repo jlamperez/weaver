@@ -149,15 +149,19 @@ bash scripts/visualize_lerobot_dataset.sh --repo-id "your-hf-username/your-datas
 
 ### 5. Uploading to Hugging Face Hub
 
-As indicated by the conversion script, you can upload your dataset to the Hub. First, log in to your Hugging Face account:
+The `upload_dataset.sh` script automates the process of uploading your converted dataset to the Hugging Face Hub and tagging it with the correct version (`v3.0`).
 
 ```bash
-huggingface-cli login
+# Upload the default dataset (jlamperez/weaver-so101-pick-orange)
+bash scripts/upload_dataset.sh
+
+# Upload a specific dataset by providing its repo-id
+bash scripts/upload_dataset.sh --repo-id "your-hf-username/your-other-dataset"
 ```
 
-Then, activate the LeRobot environment and run the upload command:
+You can activate the LeRobot environment and manually run the upload command:
 
 ```bash
 source .venv-lerobot/bin/activate
-huggingface-cli upload ${HF_USER}/dataset ~/.cache/huggingface/lerobot/${HF_USER}/dataset --repo-type dataset
+huggingface-cli upload your-hf-username/your-dataset-name ~/.cache/huggingface/lerobot/your-hf-username/your-dataset-name --repo-type dataset
 ```
