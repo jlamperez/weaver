@@ -8,7 +8,7 @@ dependencies = [
     "isaaclab",
     "isaaclab-assets",
     "isaaclab-mimic",
-    "isaaclab-rl",
+    "isaaclab-rl[all]",
     "isaaclab-tasks",
     "isaacsim[all,extscache]==5.1.0",
     "leisaac",

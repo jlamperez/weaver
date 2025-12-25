@@ -68,7 +68,7 @@ fi
 echo -e "${BLUE}Añadiendo componentes de Isaac Lab al entorno...${NC}"
 uv add --editable ./IsaacLab/source/isaaclab
 uv add --editable ./IsaacLab/source/isaaclab_assets
-uv add --editable ./IsaacLab/source/isaaclab_rl
+uv add --editable "./IsaacLab/source/isaaclab_rl[all]"
 uv add --editable ./IsaacLab/source/isaaclab_tasks
 uv add --editable ./IsaacLab/source/isaaclab_mimic
 
