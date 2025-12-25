@@ -192,3 +192,40 @@ Execute the cells in the notebook in order. The notebook is set up to:
 * Load the dataset you previously uploaded to the Hugging Face Hub.
 * Configure the training parameters and start the training job.
 * Save the trained policy, which you can then download for evaluation.
+
+### 7. Running Inference
+
+Once you have trained a policy and uploaded it to the Hugging Face Hub (or if you want to use a pre-trained one), you can run it in the Isaac Sim simulator.
+
+The process consists of two steps that must be run in **two separate terminals**:
+
+#### Step 1: Launch the Policy Server
+
+This server loads the policy model from the Hugging Face Hub and waits for inference requests from the simulator.
+
+In your **first terminal**, run:
+
+```bash
+# Launch the server on localhost:8080
+bash scripts/run_policy_server.sh
+```
+
+#### Step 2: Launch the Inference Simulation
+
+This script starts Isaac Sim and connects to the policy server to get the actions for the robot to execute.
+
+In your second terminal, run:
+
+```bash
+# Run inference using the default policy
+bash scripts/run_policy_inference.sh
+
+# To use a different policy, specify its repo-id
+bash scripts/run_policy_inference.sh --policy-repo-id "your-hf-username/your-policy-name"
+```
+
+You will see the robot attempting to complete the task autonomously, controlled by the policy you have trained.
+
+For the trained ACT here a video of the task.
+
+https://github.com/user-attachments/assets/b26b598c-f3d1-45f8-9cb0-e698209a6c76
