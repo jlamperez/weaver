@@ -31,6 +31,8 @@ wheels/
 # Cloned repositories managed by setup scripts
 IsaacLab/
 leisaac/
+assets
+datasets/
 
 # IDE / Editor specific files
 .vscode/
