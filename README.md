@@ -84,3 +84,80 @@ A quick look at the SO-101 robot being controlled via a teleoperation device to 
 * `--task`: Specifies the task to execute
 * `--enable_cameras`: Enables the robot camera views in the simulation
 * `--teleop_device`: Defines the input device for control. In this case, `so101leader` refers to the physical teleoperation device
+
+## Data Management Workflow
+
+This project includes a set of scripts to manage the entire data lifecycle, from recording demonstrations in the simulator to converting them into a format ready for training with LeRobot.
+
+### 1. Recording Demonstrations
+
+Use the `record_demo.sh` script to launch the simulation in recording mode. It automatically assigns a unique timestamped filename to each new dataset.
+
+```bash
+# Start recording with default settings
+bash scripts/record_demo.sh
+```
+
+**In the simulation window, use these keys:**
+*   **`N`**: Mark the current demonstration as **successful** and start a new one.
+*   **`R`**: Reset the demonstration (it will be marked as **unsuccessful**).
+
+Only successful demos will be included during the conversion process.
+
+**Customizing the recording:**
+```bash
+# Specify a different task and a human-readable description
+bash scripts/record_demo.sh \
+  --task "Your-Isaac-Task-v0" \
+  --task-description "A clear description of the task"
+
+# Resume recording into an existing file
+bash scripts/record_demo.sh --dataset_file ./datasets/my_dataset.hdf5 --resume
+```
+
+### 2. Verifying Raw Data
+
+You can verify the recorded HDF5 data in two ways:
+
+*   **Replay in Isaac Sim:**
+    Use `replay_demo.sh` to watch the recorded trajectories inside the simulator.
+    ```bash
+    # Replay the latest recorded dataset
+    bash scripts/replay_demo.sh
+    ```
+
+### 3. Converting to LeRobot Format
+
+The `convert_to_lerobot.sh` script handles the conversion from the HDF5 format to the LeRobot format, ready for training. The first time you run it, it will create a dedicated Python environment (`.venv-lerobot`) and install all necessary dependencies.
+
+```bash
+# Convert the latest HDF5 dataset
+bash scripts/convert_to_lerobot.sh --repo-id "your-hf-username/your-dataset-name"
+```
+
+### 4. Visualizing the LeRobot Dataset
+
+After conversion, use `visualize_lerobot_dataset.sh` to inspect the final dataset with LeRobot's built-in visualizer.
+
+```bash
+# Visualize the first episode (0) of the dataset
+bash scripts/visualize_lerobot_dataset.sh --repo-id "your-hf-username/your-dataset-name"
+
+# Visualize a different episode
+bash scripts/visualize_lerobot_dataset.sh --repo-id "your-hf-username/your-dataset-name" --episode-index 5
+```
+
+### 5. Uploading to Hugging Face Hub
+
+As indicated by the conversion script, you can upload your dataset to the Hub. First, log in to your Hugging Face account:
+
+```bash
+huggingface-cli login
+```
+
+Then, activate the LeRobot environment and run the upload command:
+
+```bash
+source .venv-lerobot/bin/activate
+huggingface-cli upload ${HF_USER}/dataset ~/.cache/huggingface/lerobot/${HF_USER}/dataset --repo-type dataset
+```
