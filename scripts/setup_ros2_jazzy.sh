@@ -53,10 +53,11 @@ fi
 
 # Define the local workspace path extracted by NVIDIA's script
 # build_ros.sh puts everything in build_ws/jazzy/jazzy_ws/
-LOCAL_WS_PATH="$REPO_DIR/build_ws/$ROS_DISTRO/${ROS_DISTRO}_ws"
+HOST_JAZZY_WS="$REPO_DIR/build_ws/$ROS_DISTRO/${ROS_DISTRO}_ws"
+HOST_ISAAC_WS="$REPO_DIR/build_ws/$ROS_DISTRO/isaac_sim_ros_ws"
 
 echo -e "${GREEN}Copying FastDDS configuration to the build workspace...${NC}"
-cp "$REPO_DIR/${ROS_DISTRO}_ws/fastdds.xml" "$LOCAL_WS_PATH/fastdds.xml"
+cp "$REPO_DIR/${ROS_DISTRO}_ws/fastdds.xml" "$HOST_JAZZY_WS/fastdds.xml"
 
 echo -e "${GREEN}Starting container using $IMAGE_TAG...${NC}"
 docker run -d -it \
@@ -65,7 +66,8 @@ docker run -d -it \
     --privileged \
     --env="DISPLAY=$DISPLAY" \
     --env="ROS_DOMAIN_ID=0" \
-    -v "$LOCAL_WS_PATH:/${ROS_DISTRO}_ws" \
+    -v "$HOST_JAZZY_WS:/${ROS_DISTRO}_ws" \
+    -v "$HOST_ISAAC_WS:/isaac_sim_ros_ws" \
     -v "/tmp/.X11-unix:/tmp/.X11-unix" \
     "$IMAGE_TAG" sleep infinity
 
@@ -80,7 +82,13 @@ docker exec -it "$CONTAINER_NAME" bash -c "
     sed -i '/FASTRTPS/d' ~/.bashrc
 
     # Set the correct paths (Everything is inside /jazzy_ws)
+    # LAYER 1: Source ROS2 Jazzy
     echo 'source /jazzy_ws/install/setup.bash' >> ~/.bashrc
+
+    # LAYER 2: Source Isaac Sim ROS workspace
+    echo 'source /isaac_sim_ros_ws/install/setup.bash' >> ~/.bashrc
+
+    # Set FastDDS config path
     echo 'export FASTRTPS_DEFAULT_PROFILES_FILE=/jazzy_ws/fastdds.xml' >> ~/.bashrc
 
     echo 'Environment variables updated.'
@@ -89,7 +97,7 @@ docker exec -it "$CONTAINER_NAME" bash -c "
 echo -e "${GREEN}============================================================${NC}"
 echo -e "${GREEN}✅ SETUP COMPLETED FOR $ROS_DISTRO ON UBUNTU $UBUNTU_VERSION${NC}"
 echo -e "------------------------------------------------------------"
-echo -e "Workspace Location (Host): $LOCAL_WS_PATH"
+echo -e "Workspace Location (Host): $HOST_JAZZY_WS"
 echo -e "Container Name: $CONTAINER_NAME"
 echo -e ""
 echo -e "To enter your ROS2 environment, run:"
