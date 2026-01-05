@@ -34,6 +34,7 @@ leisaac/
 assets
 datasets/
 logs/
+IsaacSim-ros_workspaces/
 
 # IDE / Editor specific files
 .vscode/
