@@ -12,6 +12,7 @@ dependencies = [
     "isaaclab-tasks",
     "isaacsim[all,extscache]==5.1.0",
     "leisaac",
+    "lerobot",
 ]
 
 [tool.uv]
@@ -33,4 +34,5 @@ isaaclab-assets = { path = "IsaacLab/source/isaaclab_assets", editable = true }
 isaaclab-rl = { path = "IsaacLab/source/isaaclab_rl", editable = true }
 isaaclab-tasks = { path = "IsaacLab/source/isaaclab_tasks", editable = true }
 isaaclab-mimic = { path = "IsaacLab/source/isaaclab_mimic", editable = true }
+lerobot = { path = "lerobot", editable = true }
 leisaac = { path = "leisaac/source/leisaac", editable = true }

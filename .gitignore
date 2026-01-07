@@ -35,6 +35,8 @@ assets
 datasets/
 logs/
 IsaacSim-ros_workspaces/
+lerobot/
+repos/
 
 # IDE / Editor specific files
 .vscode/

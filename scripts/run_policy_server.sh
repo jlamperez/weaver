@@ -11,7 +11,7 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 # --- Configuración del Entorno de LeRobot ---
-LEROBOT_VENV_DIR=".venv-lerobot"
+LEROBOT_VENV_DIR=".venv"
 
 # --- Valores por Defecto ---
 HOST="127.0.0.1"
