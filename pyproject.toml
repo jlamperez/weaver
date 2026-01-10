@@ -5,23 +5,37 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = "==3.11.*"
 dependencies = [
+    "dataclasses-json>=0.6.7",
     "isaaclab",
     "isaaclab-assets",
     "isaaclab-mimic",
     "isaaclab-rl[all]",
     "isaaclab-tasks",
     "isaacsim[all,extscache]==5.1.0",
+    "kornia>=0.8.2",
     "leisaac",
     "lerobot",
+    "numpy<2.0",
+    "plyfile>=1.1.3",
+    "scikit-learn>=1.8.0",
+    "slangtorch>=1.3.18",
+    "torch==2.7.0+cu128",
+    "torchaudio==2.7.0+cu128",
+    "torchvision==0.22.0+cu128",
+    "usd-core>=25.11",
 ]
 
 [tool.uv]
 override-dependencies = [
     "pywin32; sys_platform == 'win32'"
 ]
+environments = ["sys_platform == 'linux'"]
 
 [[tool.uv.index]]
 url = "file:///home/jlamperez/Workspace/weaver/nvidia"
+
+[[tool.uv.index]]
+url = "file:///home/jlamperez/Workspace/weaver/pytorch-cu128"
 
 [[tool.uv.index]]
 name = "nvidia"
@@ -29,6 +43,9 @@ url = "https://pypi.nvidia.com"
 explicit = true
 
 [tool.uv.sources]
+torch = { index = "pytorch-cu128" }
+torchvision = { index = "pytorch-cu128" }
+torchaudio = { index = "pytorch-cu128" }
 isaaclab = { path = "IsaacLab/source/isaaclab", editable = true }
 isaaclab-assets = { path = "IsaacLab/source/isaaclab_assets", editable = true }
 isaaclab-rl = { path = "IsaacLab/source/isaaclab_rl", editable = true }
@@ -36,3 +53,8 @@ isaaclab-tasks = { path = "IsaacLab/source/isaaclab_tasks", editable = true }
 isaaclab-mimic = { path = "IsaacLab/source/isaaclab_mimic", editable = true }
 lerobot = { path = "lerobot", editable = true }
 leisaac = { path = "leisaac/source/leisaac", editable = true }
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
