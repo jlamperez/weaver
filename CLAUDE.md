@@ -4,19 +4,40 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Weaver is a robotic development environment for manipulation tasks with the SO-101 robot arm. It integrates NVIDIA Isaac Sim (v5.1.0), Isaac Lab (v2.3.0), and LeIsaac for simulation-based teleoperation, data collection, and policy training via LeRobot (ACT).
+Weaver is a robotic development environment for manipulation tasks with the SO-101 robot arm. It integrates NVIDIA Isaac Sim (v6.0.0), Isaac Lab (v3.0.0), and LeIsaac for simulation-based teleoperation, data collection, and policy training via LeRobot (ACT).
 
 The full pipeline is: **simulate/record demos → convert to LeRobot format → train ACT policy on Colab → serve policy → run inference in sim**.
 
 ## Environment & Package Management
 
-- **Package manager**: `uv` exclusively. Python 3.11 is strictly required.
+- **Package manager**: `uv` exclusively. Python 3.12 is strictly required.
 - **Run commands**: Use `uv run python ...` (no need to activate `.venv` first).
 - **Two environments**:
   - `.venv` — main Weaver env (Isaac Sim + Isaac Lab + LeIsaac + LeRobot)
   - `.venv-lerobot` — isolated LeRobot env used only by `convert_to_lerobot.sh` and `run_policy_server.sh`
-- **Local package indices** are defined in `pyproject.toml` pointing to `file:///home/jlamperez/Workspace/weaver/nvidia` and `file:///home/jlamperez/Workspace/weaver/pytorch-cu128` — these indices are from the sibling `weaver/` directory, not this one.
-- **CUDA**: Requires CUDA 13.0 at `/usr/local/cuda-13.0` and `TORCH_CUDA_ARCH_LIST="12.0"` for RTX 5090.
+- **CUDA**: Requires CUDA 13.0 at `/usr/local/cuda-13.0` and `TORCH_CUDA_ARCH_LIST="12.0"` for RTX 5090. PyTorch uses the `cu128` index — cu128 is the highest CUDA version supported by LeRobot, avoiding index conflicts.
+
+### Key pinned versions
+
+| Package | Version | Notes |
+|---|---|---|
+| Python | 3.12 | strictly required |
+| `isaacsim` | 6.0.0 | from NVIDIA PyPI index |
+| Isaac Lab (`isaaclab-*`) | 3.0.0 | editable installs from `IsaacLab/source/` |
+| LeIsaac (`leisaac`) | editable | from `leisaac/source/leisaac/` |
+| LeRobot (`lerobot`) | editable (patched) | from `lerobot/`; patches: `packaging>=24.2`, `numpy>=2.0`, `huggingface-hub>=1.0,<2.0` |
+| `torch` | 2.10.0+cu128 | PyTorch cu128 index |
+| `torchvision` | 0.25.0+cu128 | PyTorch cu128 index |
+| `torchaudio` | 2.10.0+cu128 | PyTorch cu128 index |
+| `warp-lang` | 1.13.0 | pinned by isaacsim; requires shims for `omni.replicator.core` (see below) |
+
+### Dependency override rationale
+
+Several `override-dependencies` in `pyproject.toml` are needed due to conflicts between isaacsim, isaaclab, and lerobot:
+
+- `huggingface-hub>=1.0.0,<2.0.0` — lerobot requires `>=1.0` but `transformers==4.57.6` (via isaaclab) pins `<1.0`
+- `numpy>=2.0.0` — lerobot pins `<2.3.0` but `isaacsim-kernel==6.0.0.0` requires `==2.3.1`
+- `packaging>=24.2` — lerobot pins `<26.0` but `isaacsim-core==6.0.0.0` requires `==26.0`
 
 ## Setup
 
@@ -111,3 +132,51 @@ Default policy: `jlamperez/weaver-so101-act-pick-orange-policy`, action horizon 
 - **`datasets/`** — Local HDF5 demo recordings (gitignored).
 
 The default task is `LeIsaac-SO101-PickOrange-v0`. New tasks are registered in the LeIsaac task registry.
+
+## Running Teleoperation in Isaac Sim
+
+```bash
+uv run python leisaac/scripts/environments/teleoperation/teleop_se3_agent.py \
+  --task LeIsaac-SO101-PickOrange-v0 \
+  --enable_cameras \
+  --viz kit
+```
+
+- `--enable_cameras` is required when the environment has camera sensors.
+- `--viz kit` opens the GUI window. Without it the simulation runs headless.
+- Click inside the Isaac Sim viewport before pressing any keys — `carb.input` requires OS focus on the Kit window.
+- **B** = start control, **N** = success + next episode, **R** = reset (marks unsuccessful).
+
+## Known Patches (IsaacLab 3.0.0-beta / Isaac Sim 6.0.0)
+
+These are non-obvious fixes applied to this repo. If you regenerate the environment or see these errors come back, re-apply them.
+
+### Warp 1.13.0 compatibility shims (fragile — do not survive `uv sync`)
+
+`omni.replicator.core-1.13.4` uses APIs removed in Warp 1.13. Add these shims manually after install (or add them to `setup_weaver.sh`):
+
+**`.venv/lib/python3.12/site-packages/warp/__init__.py`** — append at end:
+```python
+import types as _types
+context = _types.SimpleNamespace(Kernel=Kernel, Function=Function, Module=Module)
+```
+
+**`.venv/lib/python3.12/site-packages/warp/types.py`** — append at end:
+```python
+from warp._src.types import array as array
+from warp._src.types import warp_type_to_np_dtype as warp_type_to_np_dtype
+from warp._src.types import np_dtype_to_warp_type as np_dtype_to_warp_type
+```
+
+### API changes from IsaacLab 2.x → 3.0
+
+| Error | Fix |
+|---|---|
+| `'SimulationCfg' has no attribute 'physx'` | Use `PhysxCfg` from `isaaclab_physx.physics`: `self.sim.physics = PhysxCfg(...)` in template env cfgs |
+| `asset.data.<prop>` returns `ProxyArray`, not `Tensor` | Append `.torch` to every `asset.data.*` access (e.g. `robot.data.joint_pos.torch`) |
+| `mdp has no attribute ActionTermCfg` | Add `from isaaclab.managers.action_manager import ActionTermCfg` in `tasks/template/mdp/__init__.py` |
+| `mdp has no attribute DifferentialIKControllerCfg` | `from isaaclab.controllers import DifferentialIKControllerCfg` in `devices/action_process.py` |
+| `No module named 'isaacsim.core.utils'` | Move import inside function body; use `omni.usd.get_context().get_stage()` instead of `prim_utils` |
+| `Failed to open layer scene.usd` (assets not found) | `constant.py` uses file-relative path via `Path(__file__).resolve().parents[4] / "assets"` instead of git root detection |
+| `write_joint_effort_limit_to_sim` shape mismatch | `limits=new_limits.unsqueeze(1), joint_ids=[5]` in `env_utils.py` |
+| Kit extension resolution failure | 3 extensions marked `optional = true` in `IsaacLab/apps/isaaclab.python.kit`: `isaacsim.core.experimental.primdata`, `isaacsim.sensors.experimental.rtx`, `isaacsim.util.debug_draw` |

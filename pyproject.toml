@@ -3,43 +3,68 @@ name = "weaver"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = "==3.11.*"
+requires-python = "==3.12.*"
 dependencies = [
     "dataclasses-json>=0.6.7",
     "isaaclab",
     "isaaclab-assets",
+    "isaaclab-contrib",
+    "isaaclab-experimental",
     "isaaclab-mimic",
-    "isaaclab-rl[all]",
+    "isaaclab-newton",
+    "isaaclab-ov",
+    "isaaclab-ovphysx",
+    "isaaclab-physx",
+    "isaaclab-ppisp",
+    "isaaclab-rl[rsl-rl]",
     "isaaclab-tasks",
-    "isaacsim[all,extscache]==5.1.0",
-    "kornia>=0.8.2",
+    "isaaclab-tasks-experimental",
+    "isaaclab-visualizers",
     "leisaac",
-    "lerobot",
-    "numpy<2.0",
+    "lerobot[async,dataset,training,hardware,viz,evaluation,feetech,dynamixel,damiao,robstride,unitree_g1,gamepad,lekiwi,hopejr,openarms,kinematics,intelrealsense,diffusion,aloha,pusht,metaworld]",
+    "isaacsim[all,extscache]==6.0.0",
+    "kornia>=0.8.2",
+    "numpy>=2.0",
     "plyfile>=1.1.3",
     "scikit-learn>=1.8.0",
     "slangtorch>=1.3.18",
-    "torch==2.7.0+cu128",
-    "torchaudio==2.7.0+cu128",
-    "torchvision==0.22.0+cu128",
-    "usd-core>=25.11",
+    "torch==2.10.0+cu128",
+    "torchaudio==2.10.0+cu128",
+    "torchvision==0.25.0+cu128",
 ]
+
+[tool.uv.workspace]
+members = ["."]
 
 [tool.uv]
+prerelease = "allow"
 override-dependencies = [
-    "pywin32; sys_platform == 'win32'"
+    "pywin32; sys_platform == 'win32'",
+    # Exact-version conflicts between isaacsim-kernel and isaaclab/isaaclab-rl
+    "coverage>=7.4.4",
+    "aiohttp>=3.12.14",
+    "tqdm>=4.67.1",
+    "typing-extensions>=4.12.2",
+    "pillow>=12.1.1",
+    "gymnasium>=1.2.1",
+    # lerobot base requires huggingface-hub>=1.0.0 but isaaclab->transformers==4.57.6 pins <1.0
+    "huggingface-hub>=1.0.0,<2.0.0",
+    # lerobot pins numpy<2.3.0 but isaacsim-kernel==6.0.0.0 requires numpy==2.3.1
+    "numpy>=2.0.0",
+    # lerobot pins packaging<26.0 but isaacsim-core==6.0.0.0 requires packaging==26.0
+    "packaging>=24.2",
 ]
 environments = ["sys_platform == 'linux'"]
-
-[[tool.uv.index]]
-url = "file:///home/jlamperez/Workspace/weaver/nvidia"
-
-[[tool.uv.index]]
-url = "file:///home/jlamperez/Workspace/weaver/pytorch-cu128"
+index-strategy = "unsafe-best-match"
 
 [[tool.uv.index]]
 name = "nvidia"
-url = "https://pypi.nvidia.com"
+url = "https://pypi.nvidia.com/"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
 explicit = true
 
 [tool.uv.sources]
@@ -48,13 +73,18 @@ torchvision = { index = "pytorch-cu128" }
 torchaudio = { index = "pytorch-cu128" }
 isaaclab = { path = "IsaacLab/source/isaaclab", editable = true }
 isaaclab-assets = { path = "IsaacLab/source/isaaclab_assets", editable = true }
+isaaclab-contrib = { path = "IsaacLab/source/isaaclab_contrib", editable = true }
+isaaclab-experimental = { path = "IsaacLab/source/isaaclab_experimental", editable = true }
+isaaclab-mimic = { path = "IsaacLab/source/isaaclab_mimic", editable = true }
+isaaclab-newton = { path = "IsaacLab/source/isaaclab_newton", editable = true }
+isaaclab-ov = { path = "IsaacLab/source/isaaclab_ov", editable = true }
+isaaclab-ovphysx = { path = "IsaacLab/source/isaaclab_ovphysx", editable = true }
+isaaclab-physx = { path = "IsaacLab/source/isaaclab_physx", editable = true }
+isaaclab-ppisp = { path = "IsaacLab/source/isaaclab_ppisp", editable = true }
 isaaclab-rl = { path = "IsaacLab/source/isaaclab_rl", editable = true }
 isaaclab-tasks = { path = "IsaacLab/source/isaaclab_tasks", editable = true }
-isaaclab-mimic = { path = "IsaacLab/source/isaaclab_mimic", editable = true }
-lerobot = { path = "lerobot", editable = true }
+isaaclab-tasks-experimental = { path = "IsaacLab/source/isaaclab_tasks_experimental", editable = true }
+isaaclab-visualizers = { path = "IsaacLab/source/isaaclab_visualizers", editable = true }
 leisaac = { path = "leisaac/source/leisaac", editable = true }
-
-[[tool.uv.index]]
-name = "pytorch-cu128"
-url = "https://download.pytorch.org/whl/cu128"
-explicit = true
+lerobot = { path = "lerobot", editable = true }
+isaacsim = { index = "nvidia" }

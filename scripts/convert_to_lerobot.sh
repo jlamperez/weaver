@@ -12,7 +12,7 @@ NC='\033[0m' # No Color
 
 # --- Configuración del Entorno de LeRobot ---
 LEROBOT_VENV_DIR=".venv"
-LEROBOT_PYTHON_VERSION="3.11"
+LEROBOT_PYTHON_VERSION="3.12"
 LEROBOT_REPO_DIR="lerobot"
 
 # --- Valores por Defecto ---
